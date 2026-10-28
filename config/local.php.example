@@ -1,0 +1,10 @@
+<?php
+// Copy this file to local.php and change the values for your local XAMPP setup.
+return [
+    'db_host' => '127.0.0.1',
+    'db_name' => 'iiuc_railway_system',
+    'db_user' => 'root',
+    'db_password' => '',
+    // Change this only if your project uses a different official IIUC email domain.
+    'allowed_email_pattern' => '/^[A-Z0-9._%+\\-]+@iiuc\\.ac\\.bd$/i',
+];

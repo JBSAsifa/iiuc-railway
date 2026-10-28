@@ -1,0 +1,6 @@
+<?php
+require __DIR__.'/includes/bootstrap.php';
+if ($_SERVER['REQUEST_METHOD']==='POST') { check_csrf(); $email=strtolower(trim((string)($_POST['email']??''))); $stmt=$pdo->prepare('SELECT user_id,full_name,email,mobile,category,gender,password_hash,is_active FROM users WHERE email=? LIMIT 1');$stmt->execute([$email]);$user=$stmt->fetch();if($user&&$user['is_active']&&password_verify((string)($_POST['password']??''),$user['password_hash'])){session_regenerate_id(true);unset($_SESSION['admin']);unset($user['password_hash'],$user['is_active']);$_SESSION['user']=$user;go('home.php');}flash('Email or password was not recognized.');go('login.php'); }
+$pageTitle='Sign in';require __DIR__.'/includes/header.php'; ?>
+<section class="auth"><span class="eyebrow">IIUC COMMUNITY</span><h1>Welcome back</h1><p>Sign in to manage your shuttle bookings.</p><form method="post" class="fields"><?php csrf_input();?><label>IIUC email<input required type="email" name="email" autocomplete="username"></label><label>Password<input required type="password" name="password" autocomplete="current-password"></label><button class="button">Sign in</button></form><p>New to the service? <a href="<?=e(app_url('register.php'))?>">Create an account</a></p></section>
+<?php require __DIR__.'/includes/footer.php'; ?>

@@ -1,0 +1,13 @@
+<?php
+require __DIR__.'/includes/bootstrap.php';
+if ($_SERVER['REQUEST_METHOD']==='POST') { check_csrf();$name=post_string('full_name',120);$email=strtolower(trim((string)($_POST['email']??'')));$mobile=post_string('mobile',20);$category=(string)($_POST['category']??'');$gender=(string)($_POST['gender']??'');$password=(string)($_POST['password']??'');$errors=[];
+ if($name===''||!preg_match('/^[\p{L}\p{M} .\'-]{2,120}$/u',$name))$errors[]='Enter a valid name.';
+ if(!email_allowed($email))$errors[]='Use an email address matching the configured IIUC email pattern.';
+ if(!preg_match('/^[0-9+() -]{7,20}$/',$mobile))$errors[]='Enter a valid mobile number.';
+ if(!in_array($category,['Student','Teacher','Staff'],true)||!in_array($gender,['Male','Female'],true))$errors[]='Choose a valid category and gender.';
+ if(strlen($password)<8||strlen($password)>200)$errors[]='Password must be between 8 and 200 characters.';
+ if(!$errors){try{$stmt=$pdo->prepare('INSERT INTO users(full_name,email,mobile,category,gender,password_hash) VALUES(?,?,?,?,?,?)');$stmt->execute([$name,$email,$mobile,$category,$gender,password_hash($password,PASSWORD_DEFAULT)]);flash('Account created. You can now sign in.');go('login.php');}catch(PDOException $exception){if((string)$exception->getCode()==='23000')$errors[]='That email is already registered.';else $errors[]='Account could not be created. Try again.';}}
+ if($errors)flash(implode(' ',$errors));go('register.php'); }
+$pageTitle='Create account';require __DIR__.'/includes/header.php'; ?>
+<section class="auth"><span class="eyebrow">IIUC COMMUNITY</span><h1>Create your account</h1><p>Use your university email to book a campus shuttle.</p><form method="post" class="fields"><?php csrf_input();?><label>Full name<input required name="full_name" maxlength="120" autocomplete="name"></label><label>IIUC email<input required type="email" name="email" maxlength="190" autocomplete="email" placeholder="name@iiuc.ac.bd"></label><label>Mobile number<input required type="tel" name="mobile" maxlength="20" autocomplete="tel"></label><label>Category<select name="category" required><option value="">Choose category</option><option>Student</option><option>Teacher</option><option>Staff</option></select></label><label>Gender<select name="gender" required><option value="">Choose gender</option><option>Male</option><option>Female</option></select></label><label>Password<input required type="password" name="password" minlength="8" maxlength="200" autocomplete="new-password"></label><button class="button">Create account</button></form><p>Already registered? <a href="<?=e(app_url('login.php'))?>">Sign in</a></p></section>
+<?php require __DIR__.'/includes/footer.php'; ?>

@@ -1,0 +1,1 @@
+</main><footer><a class="brand" href="<?=e(app_url('home.php'))?>">IIUC <b>Railway</b></a><span>Campus shuttle reservations · Academic project · <a href="<?=e(app_url('admin/login.php'))?>">Admin sign in</a></span></footer></body></html>
